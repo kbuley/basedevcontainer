@@ -48,6 +48,9 @@ RUN ln -s /root/.ssh.sh /root/.windows.sh
 
 WORKDIR /root
 
+# Make
+RUN apk add -q --update --progress --no-cache make ncurses
+
 # Setup shell for root and ${USERNAME}
 ENTRYPOINT [ "/bin/zsh" ]
 RUN apk add -q --update --progress --no-cache zsh nano zsh-vcs
@@ -57,7 +60,7 @@ ENV EDITOR=nano \
     TERM=xterm
 RUN apk add -q --update --progress --no-cache shadow && \
     usermod --shell /bin/zsh root && \
-    apk del shadow
+    apk del shadow sudo
 
 RUN git config --global advice.detachedHead false
 

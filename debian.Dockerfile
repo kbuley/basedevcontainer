@@ -57,6 +57,9 @@ RUN chmod +x /root/.ssh.sh
 # Retro-compatibility symlink
 RUN  ln -s /root/.ssh.sh /root/.windows.sh
 
+# Make
+RUN apt-get install -y --no-install-recommends make ncurses-bin
+
 # Setup shell
 ENTRYPOINT [ "/bin/zsh" ]
 RUN apt-get update -y && \
