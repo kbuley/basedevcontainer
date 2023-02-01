@@ -2,38 +2,38 @@
 
 Base Alpine development container for Visual Studio Code, used as base image by other images
 
-<img height="300" src="https://raw.githubusercontent.com/qdm12/basedevcontainer/master/title.svg">
+<img height="300" src="https://raw.githubusercontent.com/kbuley/basedevcontainer/master/title.svg">
 
-[![Alpine](https://github.com/qdm12/basedevcontainer/actions/workflows/alpine.yml/badge.svg)](https://github.com/qdm12/basedevcontainer/actions/workflows/alpine.yml)
-[![Debian](https://github.com/qdm12/basedevcontainer/actions/workflows/debian.yml/badge.svg)](https://github.com/qdm12/basedevcontainer/actions/workflows/debian.yml)
+[![Alpine](https://github.com/kbuley/basedevcontainer/actions/workflows/alpine.yml/badge.svg)](https://github.com/kbuley/basedevcontainer/actions/workflows/alpine.yml)
+[![Debian](https://github.com/kbuley/basedevcontainer/actions/workflows/debian.yml/badge.svg)](https://github.com/kbuley/basedevcontainer/actions/workflows/debian.yml)
 
-[![dockeri.co](https://dockeri.co/image/qmcgaw/basedevcontainer)](https://hub.docker.com/r/qmcgaw/basedevcontainer)
+[![dockeri.co](https://dockeri.co/image/kbuley/basedevcontainer)](https://hub.docker.com/r/kbuley/basedevcontainer)
 
-![Last release](https://img.shields.io/github/release/qdm12/basedevcontainer?label=Last%20release)
-![Last Docker tag](https://img.shields.io/docker/v/qmcgaw/basedevcontainer?sort=semver&label=Last%20Docker%20tag)
-[![Last release size](https://img.shields.io/docker/image-size/qmcgaw/basedevcontainer?sort=semver&label=Last%20released%20image)](https://hub.docker.com/r/qmcgaw/basedevcontainer/tags?page=1&ordering=last_updated)
-![GitHub last release date](https://img.shields.io/github/release-date/qdm12/basedevcontainer?label=Last%20release%20date)
-![Commits since release](https://img.shields.io/github/commits-since/qdm12/basedevcontainer/latest?sort=semver)
+![Last release](https://img.shields.io/github/release/kbuley/basedevcontainer?label=Last%20release)
+![Last Docker tag](https://img.shields.io/docker/v/kbuley/basedevcontainer?sort=semver&label=Last%20Docker%20tag)
+[![Last release size](https://img.shields.io/docker/image-size/kbuley/basedevcontainer?sort=semver&label=Last%20released%20image)](https://hub.docker.com/r/kbuley/basedevcontainer/tags?page=1&ordering=last_updated)
+![GitHub last release date](https://img.shields.io/github/release-date/kbuley/basedevcontainer?label=Last%20release%20date)
+![Commits since release](https://img.shields.io/github/commits-since/kbuley/basedevcontainer/latest?sort=semver)
 
-[![Latest size](https://img.shields.io/docker/image-size/qmcgaw/basedevcontainer/latest?label=Latest%20image)](https://hub.docker.com/r/qmcgaw/basedevcontainer/tags)
+[![Latest size](https://img.shields.io/docker/image-size/kbuley/basedevcontainer/latest?label=Latest%20image)](https://hub.docker.com/r/kbuley/basedevcontainer/tags)
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/basedevcontainer.svg)](https://github.com/qdm12/basedevcontainer/commits/master)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/basedevcontainer.svg)](https://github.com/qdm12/basedevcontainer/graphs/contributors)
-[![GitHub closed PRs](https://img.shields.io/github/issues-pr-closed/qdm12/basedevcontainer.svg)](https://github.com/qdm12/basedevcontainer/pulls?q=is%3Apr+is%3Aclosed)
-[![GitHub issues](https://img.shields.io/github/issues/qdm12/basedevcontainer.svg)](https://github.com/qdm12/basedevcontainer/issues)
-[![GitHub closed issues](https://img.shields.io/github/issues-closed/qdm12/basedevcontainer.svg)](https://github.com/qdm12/basedevcontainer/issues?q=is%3Aissue+is%3Aclosed)
+[![GitHub last commit](https://img.shields.io/github/last-commit/kbuley/basedevcontainer.svg)](https://github.com/kbuley/basedevcontainer/commits/master)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/kbuley/basedevcontainer.svg)](https://github.com/kbuley/basedevcontainer/graphs/contributors)
+[![GitHub closed PRs](https://img.shields.io/github/issues-pr-closed/kbuley/basedevcontainer.svg)](https://github.com/kbuley/basedevcontainer/pulls?q=is%3Apr+is%3Aclosed)
+[![GitHub issues](https://img.shields.io/github/issues/kbuley/basedevcontainer.svg)](https://github.com/kbuley/basedevcontainer/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/kbuley/basedevcontainer.svg)](https://github.com/kbuley/basedevcontainer/issues?q=is%3Aissue+is%3Aclosed)
 
-[![Lines of code](https://img.shields.io/tokei/lines/github/qdm12/basedevcontainer)](https://github.com/qdm12/basedevcontainer)
-![Code size](https://img.shields.io/github/languages/code-size/qdm12/basedevcontainer)
-![GitHub repo size](https://img.shields.io/github/repo-size/qdm12/basedevcontainer)
+[![Lines of code](https://img.shields.io/tokei/lines/github/kbuley/basedevcontainer)](https://github.com/kbuley/basedevcontainer)
+![Code size](https://img.shields.io/github/languages/code-size/kbuley/basedevcontainer)
+![GitHub repo size](https://img.shields.io/github/repo-size/kbuley/basedevcontainer)
 
-[![MIT](https://img.shields.io/github/license/qdm12/basedevcontainer)](https://github.com/qdm12/basedevcontainer/master/LICENSE)
+[![MIT](https://img.shields.io/github/license/kbuley/basedevcontainer)](https://github.com/kbuley/basedevcontainer/master/LICENSE)
 ![Visitors count](https://visitor-badge.laobi.icu/badge?page_id=basedevcontainer.readme)
 
 ## Features
 
-- `qmcgaw/basedevcontainer:alpine` (or `:latest`) based on Alpine 3.16 in **209MB**
-- `qmcgaw/basedevcontainer:debian` based on Debian Buster Slim in **376MB**
+- `kbuley/basedevcontainer:alpine` (or `:latest`) based on Alpine 3.16 in **209MB**
+- `kbuley/basedevcontainer:debian` based on Debian Buster Slim in **376MB**
 - All images are compatible with `amd64`, `386`, `arm64`, `armv7`, `armv6` and `ppc64le` CPU architectures
 - Contains the packages:
   - `libstdc++`: needed by the VS code server
@@ -47,7 +47,7 @@ Base Alpine development container for Visual Studio Code, used as base image by 
   - `docker-compose` and `docker compose` docker plugin
   - [`docker buildx`](https://github.com/docker/buildx) docker plugin
   - [`bit`](https://github.com/chriswalz/bit)
-  - [`devtainr`](https://github.com/qdm12/devtainr)
+  - [`devtainr`](https://github.com/kbuley/devtainr)
 - Custom integrated terminal
   - Based on zsh and [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
   - Uses the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme
@@ -77,8 +77,8 @@ Base Alpine development container for Visual Studio Code, used as base image by 
     # we assume you are in /yourpath/myproject
     mkdir .devcontainer
     cd .devcontainer
-    wget -q https://raw.githubusercontent.com/qdm12/basedevcontainer/master/.devcontainer/devcontainer.json
-    wget -q https://raw.githubusercontent.com/qdm12/basedevcontainer/master/.devcontainer/docker-compose.yml
+    wget -q https://raw.githubusercontent.com/kbuley/basedevcontainer/master/.devcontainer/devcontainer.json
+    wget -q https://raw.githubusercontent.com/kbuley/basedevcontainer/master/.devcontainer/docker-compose.yml
     ```
 
 1. If you have a *.vscode/settings.json*, eventually move the settings to *.devcontainer/devcontainer.json* in the `"settings"` section as *.vscode/settings.json* take precedence over the settings defined in *.devcontainer/devcontainer.json*.
@@ -116,17 +116,17 @@ You can build and extend the Docker development image to suit your needs.
 - You can build the development image yourself:
 
     ```sh
-    docker build -t qmcgaw/basedevcontainer -f alpine.Dockerfile  https://github.com/qdm12/basedevcontainer.git
+    docker build -t kbuley/basedevcontainer -f alpine.Dockerfile  https://github.com/kbuley/basedevcontainer.git
     ```
 
-- You can extend the Docker image `qmcgaw/basedevcontainer` with your own instructions.
+- You can extend the Docker image `kbuley/basedevcontainer` with your own instructions.
 
-    1. Create a file `.devcontainer/Dockerfile` with `FROM qmcgaw/basedevcontainer`
+    1. Create a file `.devcontainer/Dockerfile` with `FROM kbuley/basedevcontainer`
     1. Append instructions to the Dockerfile created. For example:
         - Add more Go packages and add an alias
 
             ```Dockerfile
-            FROM qmcgaw/basedevcontainer
+            FROM kbuley/basedevcontainer
             COPY . .
             RUN echo "alias ls='ls -al'" >> ~/.zshrc
             ```
@@ -134,7 +134,7 @@ You can build and extend the Docker development image to suit your needs.
         - Add some Alpine packages, you will need to switch to `root`:
 
             ```Dockerfile
-            FROM qmcgaw/basedevcontainer
+            FROM kbuley/basedevcontainer
             USER root
             RUN apk add bind-tools
             USER vscode

@@ -4,12 +4,12 @@ Contributions are [released](https://help.github.com/articles/github-terms-of-se
 
 ## Submitting a pull request
 
-1. [Fork](https://github.com/qdm12/basedevcontainer/fork) and clone the repository
-1. Create a new branch `git checkout -b my-branch-name`
-1. Modify the code
-1. Ensure the docker build succeeds `docker build .`
-1. Commit your modifications
-1. Push to your fork and [submit a pull request](https://github.com/qdm12/basedevcontainer/compare)
+1. [Fork](https://github.com/kbuley/basedevcontainer/fork) and clone the repository
+2. Create a new branch `git checkout -b my-branch-name`
+3. Modify the code
+4. Ensure the docker build succeeds `docker build .`
+5. Commit your modifications
+6. Push to your fork and [submit a pull request](https://github.com/kbuley/basedevcontainer/compare)
 
 ## Resources
 

@@ -8,26 +8,26 @@ ARG BIT_VERSION=v1.1.2
 ARG GH_VERSION=v2.21.1
 ARG DEVTAINR_VERSION=v0.6.0
 
-FROM qmcgaw/binpot:docker-${DOCKER_VERSION} AS docker
-FROM qmcgaw/binpot:compose-${COMPOSE_VERSION} AS compose
-FROM qmcgaw/binpot:buildx-${BUILDX_VERSION} AS buildx
-FROM qmcgaw/binpot:logo-ls-${LOGOLS_VERSION} AS logo-ls
-FROM qmcgaw/binpot:bit-${BIT_VERSION} AS bit
-FROM qmcgaw/binpot:gh-${GH_VERSION} AS gh
-FROM qmcgaw/devtainr:${DEVTAINR_VERSION} AS devtainr
+FROM kbuley/binpot:docker-${DOCKER_VERSION} AS docker
+FROM kbuley/binpot:compose-${COMPOSE_VERSION} AS compose
+FROM kbuley/binpot:buildx-${BUILDX_VERSION} AS buildx
+FROM kbuley/binpot:logo-ls-${LOGOLS_VERSION} AS logo-ls
+FROM kbuley/binpot:bit-${BIT_VERSION} AS bit
+FROM kbuley/binpot:gh-${GH_VERSION} AS gh
+FROM kbuley/devtainr:${DEVTAINR_VERSION} AS devtainr
 
 FROM debian:${DEBIAN_VERSION}
 ARG CREATED
 ARG COMMIT
 ARG VERSION=local
 LABEL \
-    org.opencontainers.image.authors="quentin.mcgaw@gmail.com" \
+    org.opencontainers.image.authors="kevin@buley.org" \
     org.opencontainers.image.created=$CREATED \
     org.opencontainers.image.version=$VERSION \
     org.opencontainers.image.revision=$COMMIT \
-    org.opencontainers.image.url="https://github.com/qdm12/basedevcontainer" \
-    org.opencontainers.image.documentation="https://github.com/qdm12/basedevcontainer" \
-    org.opencontainers.image.source="https://github.com/qdm12/basedevcontainer" \
+    org.opencontainers.image.url="https://github.com/kbuley/basedevcontainer" \
+    org.opencontainers.image.documentation="https://github.com/kbuley/basedevcontainer" \
+    org.opencontainers.image.source="https://github.com/kbuley/basedevcontainer" \
     org.opencontainers.image.title="Base Dev container Debian" \
     org.opencontainers.image.description="Base Debian development container for Visual Studio Code Remote Containers development"
 ENV BASE_VERSION="${VERSION}-${CREATED}-${COMMIT}"
