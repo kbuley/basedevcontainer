@@ -20,6 +20,9 @@ FROM alpine:${ALPINE_VERSION}
 ARG CREATED
 ARG COMMIT
 ARG VERSION=local
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=${USER_UID}
 LABEL \
     org.opencontainers.image.authors="kevin@buley.org" \
     org.opencontainers.image.created=$CREATED \
@@ -32,71 +35,77 @@ LABEL \
     org.opencontainers.image.description="Base Alpine development container for Visual Studio Code Remote Containers development"
 ENV BASE_VERSION="${VERSION}-${CREATED}-${COMMIT}"
 
+RUN apk add -q --update --progress --no-cache shadow sudo \
+    && addgroup -g ${USER_GID} ${USERNAME} \
+    && adduser -D -G ${USERNAME} -u ${USER_UID} ${USERNAME} \
+    && adduser ${USERNAME} wheel \
+    && sed -e 's;^# \(%wheel.*NOPASSWD.*\);\1;g' -i /etc/sudoers \
+    && mkdir /go \
+    && chown -R vscode /go
+USER $USERNAME
+
 # CA certificates
-RUN apk add -q --update --progress --no-cache ca-certificates
+RUN sudo apk add -q --update --progress --no-cache ca-certificates
 
 # Timezone
-RUN apk add -q --update --progress --no-cache tzdata
+RUN sudo apk add -q --update --progress --no-cache tzdata
 ENV TZ=
 
 # Setup Git and SSH
-RUN apk add -q --update --progress --no-cache git mandoc git-doc openssh-client
-COPY .ssh.sh /root/
-RUN chmod +x /root/.ssh.sh
+RUN sudo apk add -q --update --progress --no-cache git mandoc git-doc openssh-client
+COPY --chown=${USERNAME}:${USERNAME} --chmod=700 .ssh.sh /home/${USERNAME}/
 # Retro-compatibility symlink
-RUN ln -s /root/.ssh.sh /root/.windows.sh
+RUN ln -s /home/${USERNAME}/.ssh.sh /home/${USERNAME}/.windows.sh
 
-WORKDIR /root
+WORKDIR /home/${USERNAME}
 
 # Make
-RUN apk add -q --update --progress --no-cache make ncurses
+RUN sudo apk add -q --update --progress --no-cache make ncurses
 
-# Setup shell for root and ${USERNAME}
+# Setup shell for ${USERNAME}
 ENTRYPOINT [ "/bin/zsh" ]
-RUN apk add -q --update --progress --no-cache zsh nano zsh-vcs
+RUN sudo apk add -q --update --progress --no-cache zsh nano zsh-vcs
 ENV EDITOR=nano \
     LANG=en_US.UTF-8 \
     # MacOS compatibility
     TERM=xterm
-RUN apk add -q --update --progress --no-cache shadow && \
-    usermod --shell /bin/zsh root && \
-    apk del shadow sudo
+RUN sudo usermod --shell /bin/zsh ${USERNAME}
 
 RUN git config --global advice.detachedHead false
 
-COPY shell/.zshrc shell/.welcome.sh /root/
+COPY --chown=${USERNAME}:${USERNAME} shell/.zshrc shell/.welcome.sh /home/${USERNAME}/
 RUN git clone --single-branch --depth 1 https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 
-COPY shell/.p10k.zsh /root/
-RUN apk add -q --update --progress --no-cache zsh-theme-powerlevel10k gitstatus && \
+COPY --chown=${USERNAME}:${USERNAME} shell/.p10k.zsh /home/${USERNAME}/
+RUN sudo apk add -q --update --progress --no-cache zsh-theme-powerlevel10k gitstatus && \
     ln -s /usr/share/zsh/plugins/powerlevel10k ~/.oh-my-zsh/custom/themes/powerlevel10k
 
 RUN git config --global advice.detachedHead true
 
 # Docker CLI
-COPY --from=docker /bin /usr/local/bin/docker
+COPY --from=docker --chmod=755 /bin /usr/local/bin/docker
 ENV DOCKER_BUILDKIT=1
 
 # Docker compose
-COPY --from=compose /bin /usr/libexec/docker/cli-plugins/docker-compose
+COPY --from=compose --chmod=755 /bin /usr/libexec/docker/cli-plugins/docker-compose
 ENV COMPOSE_DOCKER_CLI_BUILD=1
-RUN echo "alias docker-compose='docker compose'" >> /root/.zshrc
+RUN echo "alias docker-compose='docker compose'" >> /home/${USERNAME}/.zshrc
 
 # Buildx plugin
-COPY --from=buildx /bin /usr/libexec/docker/cli-plugins/docker-buildx
+COPY --from=buildx --chmod=755 /bin /usr/libexec/docker/cli-plugins/docker-buildx
 
 # Logo ls
-COPY --from=logo-ls /bin /usr/local/bin/logo-ls
-RUN echo "alias ls='logo-ls'" >> /root/.zshrc
+COPY --from=logo-ls --chmod=755 /bin /usr/local/bin/logo-ls
+RUN echo "alias ls='logo-ls'" >> /home/${USERNAME}/.zshrc
 
 # Bit
-COPY --from=bit /bin /usr/local/bin/bit
+COPY --from=bit --chmod=755 /bin /usr/local/bin/bit
 ARG TARGETPLATFORM
 RUN if [ "${TARGETPLATFORM}" != "linux/s390x" ]; then echo "y" | bit complete; fi
 
-COPY --from=gh /bin /usr/local/bin/gh
+COPY --from=gh --chmod=755 /bin /usr/local/bin/gh
 
-COPY --from=devtainr /devtainr /usr/local/bin/devtainr
+COPY --from=devtainr --chmod=755 /devtainr /usr/local/bin/devtainr
 
 # VSCode specific (speed up setup)
-RUN apk add -q --update --progress --no-cache libstdc++
+RUN sudo apk add -q --update --progress --no-cache libstdc++
