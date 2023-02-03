@@ -85,6 +85,7 @@ RUN git config --global advice.detachedHead true
 # Docker CLI
 COPY --from=docker --chmod=755 /bin /usr/local/bin/docker
 ENV DOCKER_BUILDKIT=1
+RUN sudo touch /var/run/docker.sock && sudo chown ${USERNAME}:${USERNAME} /var/run/docker.sock
 
 # Docker compose
 COPY --from=compose --chmod=755 /bin /usr/libexec/docker/cli-plugins/docker-compose
