@@ -23,6 +23,7 @@ ARG VERSION=local
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=${USER_UID}
+ENV BASE_USERNAME=${USERNAME}
 LABEL \
     org.opencontainers.image.authors="kevin@buley.org" \
     org.opencontainers.image.created=$CREATED \
