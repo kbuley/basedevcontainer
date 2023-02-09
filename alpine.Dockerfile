@@ -65,7 +65,7 @@ RUN sudo apk add -q --update --progress --no-cache make ncurses
 
 # Setup shell for ${USERNAME}
 ENTRYPOINT [ "/bin/zsh" ]
-RUN sudo apk add -q --update --progress --no-cache zsh nano zsh-vcs
+RUN sudo apk add -q --update --progress --no-cache zsh nano zsh-vcs less
 ENV EDITOR=nano \
     LANG=en_US.UTF-8 \
     # MacOS compatibility
