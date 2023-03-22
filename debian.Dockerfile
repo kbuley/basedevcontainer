@@ -18,6 +18,7 @@ FROM kbuley/devtainr:${DEVTAINR_VERSION} AS devtainr
 
 FROM debian:${DEBIAN_VERSION}
 ARG GITVERSION_VERSION=5.12.0
+ARG TARGETARCH
 ARG CREATED
 ARG COMMIT
 ARG VERSION=local
@@ -71,9 +72,7 @@ COPY --chown=${USERNAME}:${USERNAME} --chmod=700 .ssh.sh /home/${USERNAME}/
 # Retro-compatibility symlink
 RUN  ln -s /home/${USERNAME}/.ssh.sh /home/${USERNAME}/.windows.sh
 
-RUN dpkgArch="$(dpkg --print-architecture)"; \
-    case "$dpkgArch" in \
-    aarch64) export GVARCH='arm64' ;; \
+RUN case "${TARGETARCH}" in \
     arm64) export GVARCH='arm64' ;; \
     amd64) export GVARCH='x64' ;; \
     esac; \

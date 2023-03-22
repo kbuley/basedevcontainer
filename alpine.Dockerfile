@@ -18,6 +18,7 @@ FROM kbuley/devtainr:${DEVTAINR_VERSION} AS devtainr
 
 FROM alpine:${ALPINE_VERSION}
 ARG GITVERSION_VERSION=5.12.0
+ARG TARGETARCH
 ARG CREATED
 ARG COMMIT
 ARG VERSION=local
@@ -59,10 +60,12 @@ COPY --chown=${USERNAME}:${USERNAME} --chmod=700 .ssh.sh /home/${USERNAME}/
 # Retro-compatibility symlink
 RUN ln -s /home/${USERNAME}/.ssh.sh /home/${USERNAME}/.windows.sh
 
-RUN case "${TARGETARCH}" in ; \
+RUN echo ${TARGETARCH}
+
+RUN case "${TARGETARCH}" in \
     arm64) export GVARCH='arm64' ;; \
     amd64) export GVARCH='x64' ;; \
-    esac; \
+    esac ; \
     cd /tmp ; \
     wget https://github.com/GitTools/GitVersion/releases/download/${GITVERSION_VERSION}/gitversion-linux-musl-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
     tar zxvf gitversion-linux-musl-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
