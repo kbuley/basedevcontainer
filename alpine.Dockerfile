@@ -17,6 +17,8 @@ FROM kbuley/binpot:gh-${GH_VERSION} AS gh
 FROM kbuley/devtainr:${DEVTAINR_VERSION} AS devtainr
 
 FROM alpine:${ALPINE_VERSION}
+ARG GITVERSION_VERSION=5.12.0
+ARG TARGETARCH
 ARG CREATED
 ARG COMMIT
 ARG VERSION=local
@@ -36,7 +38,7 @@ LABEL \
     org.opencontainers.image.description="Base Alpine development container for Visual Studio Code Remote Containers development"
 ENV BASE_VERSION="${VERSION}-${CREATED}-${COMMIT}"
 
-RUN apk add -q --update --progress --no-cache shadow sudo \
+RUN apk add -q --update --progress --no-cache shadow sudo icu \
     && addgroup -g ${USER_GID} ${USERNAME} \
     && adduser -D -G ${USERNAME} -u ${USER_UID} ${USERNAME} \
     && adduser ${USERNAME} wheel \
@@ -57,6 +59,18 @@ RUN sudo apk add -q --update --progress --no-cache git mandoc git-doc openssh-cl
 COPY --chown=${USERNAME}:${USERNAME} --chmod=700 .ssh.sh /home/${USERNAME}/
 # Retro-compatibility symlink
 RUN ln -s /home/${USERNAME}/.ssh.sh /home/${USERNAME}/.windows.sh
+
+RUN echo ${TARGETARCH}
+
+RUN case "${TARGETARCH}" in \
+    arm64) export GVARCH='arm64' ;; \
+    amd64) export GVARCH='x64' ;; \
+    esac ; \
+    cd /tmp ; \
+    wget https://github.com/GitTools/GitVersion/releases/download/${GITVERSION_VERSION}/gitversion-linux-musl-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
+    tar zxvf gitversion-linux-musl-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
+    sudo cp gitversion /bin ; \
+    sudo chmod +rx /bin/gitversion
 
 WORKDIR /home/${USERNAME}
 
