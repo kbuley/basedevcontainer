@@ -59,9 +59,7 @@ COPY --chown=${USERNAME}:${USERNAME} --chmod=700 .ssh.sh /home/${USERNAME}/
 # Retro-compatibility symlink
 RUN ln -s /home/${USERNAME}/.ssh.sh /home/${USERNAME}/.windows.sh
 
-RUN apkArch="$(apk --print-arch)"; \
-    case "$apkArch" in \
-    aarch64) export GVARCH='arm64' ;; \
+RUN case "${TARGETARCH}" in ; \
     arm64) export GVARCH='arm64' ;; \
     amd64) export GVARCH='x64' ;; \
     esac; \
