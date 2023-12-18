@@ -1,22 +1,27 @@
-ARG DEBIAN_VERSION=bookwork-slim
+ARG DEBIAN_VERSION=bookworm-slim
 
-ARG DOCKER_VERSION=v20.10.22
-ARG COMPOSE_VERSION=v2.14.2
-ARG BUILDX_VERSION=v0.9.1
 ARG LOGOLS_VERSION=v1.3.7
 ARG BIT_VERSION=v1.1.2
 ARG GH_VERSION=v2.21.1
-ARG DEVTAINR_VERSION=v0.6.0
 
-FROM kbuley/binpot:docker-${DOCKER_VERSION} AS docker
-FROM kbuley/binpot:compose-${COMPOSE_VERSION} AS compose
-FROM kbuley/binpot:buildx-${BUILDX_VERSION} AS buildx
 FROM kbuley/binpot:logo-ls-${LOGOLS_VERSION} AS logo-ls
 FROM kbuley/binpot:bit-${BIT_VERSION} AS bit
 FROM kbuley/binpot:gh-${GH_VERSION} AS gh
-FROM kbuley/devtainr:${DEVTAINR_VERSION} AS devtainr
+
+FROM debian:${DEBIAN_VERSION} as neovim
+ARG NEOVIM_VERSION=v0.9.4
+WORKDIR /builder
+# hadolint ignore=DL3008
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+  build-essential file make git ninja-build gettext cmake unzip curl ca-certificates \
+  && git clone --depth 1 --branch "${NEOVIM_VERSION}" https://github.com/neovim/neovim
+WORKDIR /builder/neovim
+RUN make CMAKE_BUILD_TYPE=Release
+WORKDIR /builder/neovim/build
+RUN cpack -G DEB && mkdir /package && cp nvim-linux64.deb /package
 
 FROM debian:${DEBIAN_VERSION}
+ARG TIMEZONE=EST5EDT
 ARG GITVERSION_VERSION=5.12.0
 ARG TARGETARCH
 ARG CREATED
@@ -38,98 +43,46 @@ LABEL \
   org.opencontainers.image.description="Base Debian development container for Visual Studio Code Remote Containers development"
 ENV BASE_VERSION="${VERSION}-${CREATED}-${COMMIT}"
 
-RUN apt-get update -y && \
-  apt-get install -y --no-install-recommends adduser sudo wget icu-devtools \
-  && addgroup --gid ${USER_GID} ${USERNAME} \
-  && adduser --disabled-password --home /home/${USERNAME} --gid ${USER_GID} --uid ${USER_UID} ${USERNAME} \
-  && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-  && mkdir /go \
-  && chown -R vscode /go
-USER $USERNAME
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# CA certificates
-RUN sudo apt-get update -y && \
-  sudo apt-get install -y --no-install-recommends ca-certificates && \
-  sudo rm -r /var/cache/* /var/lib/apt/lists/*
+WORKDIR /tmp
 
-# Timezone
-RUN sudo apt-get update -y && \
-  sudo apt-get install -y --no-install-recommends tzdata && \
-  sudo rm -r /var/cache/* /var/lib/apt/lists/*
-ENV TZ=
+COPY --from=neovim /package/*.deb /tmp
 
-# Setup Git and SSH
-# Workaround for older Debian in order to be able to sign commits
-RUN echo "deb https://deb.debian.org/debian bookworm main" | sudo tee -a /etc/apt/sources.list && \
-  sudo apt-get update && \
-  sudo apt-get install -y --no-install-recommends -t bookworm git git-man && \
-  sudo rm -r /var/cache/* /var/lib/apt/lists/*
-RUN sudo apt-get update -y && \
-  sudo apt-get install -y --no-install-recommends man openssh-client less && \
-  sudo rm -r /var/cache/* /var/lib/apt/lists/*
-COPY --chown=${USERNAME}:${USERNAME} --chmod=700 .ssh.sh /home/${USERNAME}/
-
-# Retro-compatibility symlink
-RUN  ln -s /home/${USERNAME}/.ssh.sh /home/${USERNAME}/.windows.sh
-
+# hadolint ignore=DL3008, SC2016
 RUN case "${TARGETARCH}" in \
   arm64) export GVARCH='arm64' ;; \
   amd64) export GVARCH='x64' ;; \
-  esac; \
-  cd /tmp ; \
-  wget https://github.com/GitTools/GitVersion/releases/download/${GITVERSION_VERSION}/gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
-  tar zxvf gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
-  sudo cp gitversion /bin ; \
-  sudo chmod +rx /bin/gitversion
-
-# Make
-RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends make ncurses-bin && sudo rm -r /var/cache/* /var/lib/apt/lists/*
-
-# Setup shell
-ENTRYPOINT [ "/bin/zsh" ]
-RUN sudo apt-get update -y && \
-  sudo apt-get install -y --no-install-recommends zsh nano locales wget && \
-  sudo apt-get autoremove -y && \
-  sudo apt-get clean -y && \
-  sudo rm -r /var/cache/* /var/lib/apt/lists/*
-ENV EDITOR=nano \
-  LANG=en_US.UTF-8 \
-  # MacOS compatibility
-  TERM=xterm
-RUN echo "LC_ALL=en_US.UTF-8" | sudo tee -a /etc/environment && \
-  echo "en_US.UTF-8 UTF-8" | sudo tee -a /etc/locale.gen && \
-  echo "LANG=en_US.UTF-8" | sudo tee /etc/locale.conf && \
-  sudo locale-gen en_US.UTF-8
-RUN sudo usermod --shell /bin/zsh ${USERNAME}
-
-RUN git config --global advice.detachedHead false
+  esac \
+  && apt-get update -y \
+  && apt-get install -y --no-install-recommends adduser sudo wget icu-devtools fzf tmux make \
+  ca-certificates tzdata git git-man man openssh-client less make ncurses-bin zsh nano locales \
+  && addgroup --gid ${USER_GID} ${USERNAME} \
+  && adduser --disabled-password --home /home/${USERNAME} --gid ${USER_GID} --uid ${USER_UID} ${USERNAME} \
+  && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+  && wget --progress=dot:giga "https://github.com/GitTools/GitVersion/releases/download/${GITVERSION_VERSION}/gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz" \
+  && tar zxvf "gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz" \
+  && cp gitversion /bin \
+  && chmod +rx /bin/gitversion \
+  && echo "LC_ALL=en_US.UTF-8" | tee -a /etc/environment \
+  && echo "en_US.UTF-8 UTF-8" | tee -a /etc/locale.gen \
+  && echo "LANG=en_US.UTF-8" | tee /etc/locale.conf \
+  && locale-gen en_US.UTF-8 \
+  && usermod --shell /bin/zsh ${USERNAME} \ 
+  && echo "alias ls='logo-ls'" >> /home/"${USERNAME}"/.zshrc \
+  && echo export XDG_CONFIG_HOME='"$HOME/.config"' >> /etc/zsh/zshenv \
+  && echo export XDG_DATA_HOME='"$HOME/.local/share"'  >> /etc/zsh/zshenv \
+  && echo export XDG_CACHE_HOME='"$HOME/.cache"'  >> /etc/zsh/zshenv \
+  && dpkg -i -- *.deb \
+  && rm -f -- *.deb \
+  && apt-get clean \
+  && rm -rf /var/cache/* /var/lib/apt/lists/
 
 COPY --chown=${USERNAME}:${USERNAME} shell/.zshrc shell/.welcome.sh /home/${USERNAME}/
-RUN git clone --single-branch --depth 1 https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
-
-ARG POWERLEVEL10K_VERSION=v1.16.1
 COPY --chown=${USERNAME}:${USERNAME} shell/.p10k.zsh /home/${USERNAME}/
-RUN git clone --branch ${POWERLEVEL10K_VERSION} --single-branch --depth 1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k && \
-  sudo rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k/.git
-
-RUN git config --global advice.detachedHead true
-
-# Docker CLI
-COPY --from=docker --chmod=755 /bin /usr/local/bin/docker
-ENV DOCKER_BUILDKIT=1
-RUN sudo touch /var/run/docker.sock && sudo chown ${USERNAME}:${USERNAME} /var/run/docker.sock
-
-# Docker compose
-COPY --from=compose --chmod=755 /bin /usr/libexec/docker/cli-plugins/docker-compose
-ENV COMPOSE_DOCKER_CLI_BUILD=1
-RUN echo "alias docker-compose='docker compose'" >> /home/${USERNAME}/.zshrc
-
-# Buildx plugin
-COPY --from=buildx --chmod=755 /bin /usr/libexec/docker/cli-plugins/docker-buildx
 
 # Logo ls
 COPY --from=logo-ls --chmod=755 /bin /usr/local/bin/logo-ls
-RUN echo "alias ls='logo-ls'" >> /home/${USERNAME}/.zshrc
 
 # Bit
 COPY --from=bit --chmod=755 /bin /usr/local/bin/bit
@@ -138,4 +91,21 @@ RUN if [ "${TARGETPLATFORM}" != "linux/s390x" ]; then echo "y" | bit complete; f
 
 COPY --from=gh --chmod=755 /bin /usr/local/bin/gh
 
-COPY --from=devtainr --chmod=755 /devtainr /usr/local/bin/devtainr
+USER $USERNAME
+
+ENV TZ=${TIMEZONE}
+ENV EDITOR=nano
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV LANGUAGE=en_US
+ENV TERM=xterm-256color
+
+WORKDIR /home/${USERNAME}
+
+RUN git clone --single-branch --depth 1 https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+
+ARG POWERLEVEL10K_VERSION=v1.16.1
+RUN git clone --branch ${POWERLEVEL10K_VERSION} --single-branch --depth 1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k && \
+  rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k/.git
+
+ENTRYPOINT [ "/bin/zsh" ]
