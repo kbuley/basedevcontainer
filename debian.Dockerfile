@@ -1,4 +1,4 @@
-ARG DEBIAN_VERSION=bullseye-slim
+ARG DEBIAN_VERSION=bookwork-slim
 
 ARG DOCKER_VERSION=v20.10.22
 ARG COMPOSE_VERSION=v2.14.2
@@ -27,60 +27,60 @@ ARG USER_UID=1000
 ARG USER_GID=${USER_UID}
 ENV BASE_USERNAME=${USERNAME}
 LABEL \
-    org.opencontainers.image.authors="kevin@buley.org" \
-    org.opencontainers.image.created=$CREATED \
-    org.opencontainers.image.version=$VERSION \
-    org.opencontainers.image.revision=$COMMIT \
-    org.opencontainers.image.url="https://github.com/kbuley/basedevcontainer" \
-    org.opencontainers.image.documentation="https://github.com/kbuley/basedevcontainer" \
-    org.opencontainers.image.source="https://github.com/kbuley/basedevcontainer" \
-    org.opencontainers.image.title="Base Dev container Debian" \
-    org.opencontainers.image.description="Base Debian development container for Visual Studio Code Remote Containers development"
+  org.opencontainers.image.authors="kevin@buley.org" \
+  org.opencontainers.image.created=$CREATED \
+  org.opencontainers.image.version=$VERSION \
+  org.opencontainers.image.revision=$COMMIT \
+  org.opencontainers.image.url="https://github.com/kbuley/basedevcontainer" \
+  org.opencontainers.image.documentation="https://github.com/kbuley/basedevcontainer" \
+  org.opencontainers.image.source="https://github.com/kbuley/basedevcontainer" \
+  org.opencontainers.image.title="Base Dev container Debian" \
+  org.opencontainers.image.description="Base Debian development container for Visual Studio Code Remote Containers development"
 ENV BASE_VERSION="${VERSION}-${CREATED}-${COMMIT}"
 
 RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends adduser sudo wget icu-devtools \
-    && addgroup --gid ${USER_GID} ${USERNAME} \
-    && adduser --disabled-password --home /home/${USERNAME} --gid ${USER_GID} --uid ${USER_UID} ${USERNAME} \
-    && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && mkdir /go \
-    && chown -R vscode /go
+  apt-get install -y --no-install-recommends adduser sudo wget icu-devtools \
+  && addgroup --gid ${USER_GID} ${USERNAME} \
+  && adduser --disabled-password --home /home/${USERNAME} --gid ${USER_GID} --uid ${USER_UID} ${USERNAME} \
+  && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+  && mkdir /go \
+  && chown -R vscode /go
 USER $USERNAME
 
 # CA certificates
 RUN sudo apt-get update -y && \
-    sudo apt-get install -y --no-install-recommends ca-certificates && \
-    sudo rm -r /var/cache/* /var/lib/apt/lists/*
+  sudo apt-get install -y --no-install-recommends ca-certificates && \
+  sudo rm -r /var/cache/* /var/lib/apt/lists/*
 
 # Timezone
 RUN sudo apt-get update -y && \
-    sudo apt-get install -y --no-install-recommends tzdata && \
-    sudo rm -r /var/cache/* /var/lib/apt/lists/*
+  sudo apt-get install -y --no-install-recommends tzdata && \
+  sudo rm -r /var/cache/* /var/lib/apt/lists/*
 ENV TZ=
 
 # Setup Git and SSH
 # Workaround for older Debian in order to be able to sign commits
 RUN echo "deb https://deb.debian.org/debian bookworm main" | sudo tee -a /etc/apt/sources.list && \
-    sudo apt-get update && \
-    sudo apt-get install -y --no-install-recommends -t bookworm git git-man && \
-    sudo rm -r /var/cache/* /var/lib/apt/lists/*
+  sudo apt-get update && \
+  sudo apt-get install -y --no-install-recommends -t bookworm git git-man && \
+  sudo rm -r /var/cache/* /var/lib/apt/lists/*
 RUN sudo apt-get update -y && \
-    sudo apt-get install -y --no-install-recommends man openssh-client less && \
-    sudo rm -r /var/cache/* /var/lib/apt/lists/*
+  sudo apt-get install -y --no-install-recommends man openssh-client less && \
+  sudo rm -r /var/cache/* /var/lib/apt/lists/*
 COPY --chown=${USERNAME}:${USERNAME} --chmod=700 .ssh.sh /home/${USERNAME}/
 
 # Retro-compatibility symlink
 RUN  ln -s /home/${USERNAME}/.ssh.sh /home/${USERNAME}/.windows.sh
 
 RUN case "${TARGETARCH}" in \
-    arm64) export GVARCH='arm64' ;; \
-    amd64) export GVARCH='x64' ;; \
-    esac; \
-    cd /tmp ; \
-    wget https://github.com/GitTools/GitVersion/releases/download/${GITVERSION_VERSION}/gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
-    tar zxvf gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
-    sudo cp gitversion /bin ; \
-    sudo chmod +rx /bin/gitversion
+  arm64) export GVARCH='arm64' ;; \
+  amd64) export GVARCH='x64' ;; \
+  esac; \
+  cd /tmp ; \
+  wget https://github.com/GitTools/GitVersion/releases/download/${GITVERSION_VERSION}/gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
+  tar zxvf gitversion-linux-${GVARCH}-${GITVERSION_VERSION}.tar.gz ; \
+  sudo cp gitversion /bin ; \
+  sudo chmod +rx /bin/gitversion
 
 # Make
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends make ncurses-bin && sudo rm -r /var/cache/* /var/lib/apt/lists/*
@@ -88,18 +88,18 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends make 
 # Setup shell
 ENTRYPOINT [ "/bin/zsh" ]
 RUN sudo apt-get update -y && \
-    sudo apt-get install -y --no-install-recommends zsh nano locales wget && \
-    sudo apt-get autoremove -y && \
-    sudo apt-get clean -y && \
-    sudo rm -r /var/cache/* /var/lib/apt/lists/*
+  sudo apt-get install -y --no-install-recommends zsh nano locales wget && \
+  sudo apt-get autoremove -y && \
+  sudo apt-get clean -y && \
+  sudo rm -r /var/cache/* /var/lib/apt/lists/*
 ENV EDITOR=nano \
-    LANG=en_US.UTF-8 \
-    # MacOS compatibility
-    TERM=xterm
+  LANG=en_US.UTF-8 \
+  # MacOS compatibility
+  TERM=xterm
 RUN echo "LC_ALL=en_US.UTF-8" | sudo tee -a /etc/environment && \
-    echo "en_US.UTF-8 UTF-8" | sudo tee -a /etc/locale.gen && \
-    echo "LANG=en_US.UTF-8" | sudo tee /etc/locale.conf && \
-    sudo locale-gen en_US.UTF-8
+  echo "en_US.UTF-8 UTF-8" | sudo tee -a /etc/locale.gen && \
+  echo "LANG=en_US.UTF-8" | sudo tee /etc/locale.conf && \
+  sudo locale-gen en_US.UTF-8
 RUN sudo usermod --shell /bin/zsh ${USERNAME}
 
 RUN git config --global advice.detachedHead false
@@ -110,7 +110,7 @@ RUN git clone --single-branch --depth 1 https://github.com/robbyrussell/oh-my-zs
 ARG POWERLEVEL10K_VERSION=v1.16.1
 COPY --chown=${USERNAME}:${USERNAME} shell/.p10k.zsh /home/${USERNAME}/
 RUN git clone --branch ${POWERLEVEL10K_VERSION} --single-branch --depth 1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k && \
-    sudo rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k/.git
+  sudo rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k/.git
 
 RUN git config --global advice.detachedHead true
 
