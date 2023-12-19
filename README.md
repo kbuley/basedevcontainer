@@ -33,9 +33,9 @@ Base Alpine development container for Visual Studio Code, used as base image by 
 
 ## Features
 
-- `kbuley/basedevcontainer:alpine` (or `:latest`) based on Alpine 3.16 in **209MB**
-- `kbuley/basedevcontainer:debian` based on Debian Bookworm Slim in **536MB**
-- kbuley/basedevcontainer:ubuntu based on Ubuntu LTS in 497MB
+- `kbuley/basedevcontainer:alpine` (or `:latest`) based on Alpine 3.19 in **873MB**
+- `kbuley/basedevcontainer:debian` based on Debian Bookworm Slim in **581MB**
+- `kbuley/basedevcontainer:ubuntu` based on Ubuntu LTS in 537MB
 - All images are compatible with `amd64`, `386`, `arm64`, `armv7`, `armv6` and `ppc64le` CPU architectures
 - Contains the packages:
   - `libstdc++`: needed by the VS code server
@@ -43,9 +43,10 @@ Base Alpine development container for Visual Studio Code, used as base image by 
   - `git`: interact with Git repositories
   - `openssh-client`: use SSH keys
   - `nano`: edit files from the terminal
+  - `neovim`: vim, but even better
 - Contains the binaries:
   - [`gh`](https://github.com/cli/cli): interact with Github with the terminal
-  - [`bit`](https://github.com/chriswalz/bit)
+  - [`bit`](https://github.com/chriswalz/bit): a modern git client
 - Custom integrated terminal
   - Based on zsh and [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
   - Uses the [Powerlevel10k](https://github.com/romkatv/powerlevel10k) theme
@@ -53,7 +54,7 @@ Base Alpine development container for Visual Studio Code, used as base image by 
     - Shows information on login; easily extensible
 - Cross platform
   - Easily bind mount your SSH keys to use with **git**
-- Supports SSH keys with Linux, OSX and Windows
+- Supports SSH keys with Linux, OSX
 
 ## Requirements
 
