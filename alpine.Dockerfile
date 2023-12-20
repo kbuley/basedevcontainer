@@ -3,10 +3,12 @@ ARG ALPINE_VERSION=3.19
 ARG LOGOLS_VERSION=v1.3.7
 ARG BIT_VERSION=v1.1.2
 ARG GH_VERSION=v2.40.1
+ARG LAZYGIT_VERSION=v0.40.2
 
 FROM kbuley/binpot:logo-ls-${LOGOLS_VERSION} AS logo-ls
 FROM kbuley/binpot:bit-${BIT_VERSION} AS bit
 FROM kbuley/binpot:gh-${GH_VERSION} AS gh
+FROM kbuley/binpot:lazygit-{$LAZYGIT_VERSION} as lazygit
 
 FROM alpine:${ALPINE_VERSION} as neovim
 ARG NEOVIM_VERSION=v0.9.4
@@ -72,6 +74,7 @@ RUN case "${TARGETARCH}" in \
 COPY --from=bit --chmod=755 /bin /usr/local/bin/bit
 COPY --from=logo-ls --chmod=755 /bin /usr/local/bin/logo-ls
 COPY --from=gh --chmod=755 /bin /usr/local/bin/gh
+COPY --from=lazygit --chmod=755 /bin /usr/local/bin/lazygit
 
 USER ${USERNAME}
 

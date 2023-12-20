@@ -41,6 +41,12 @@ jobs:
           username: kbuley
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      - uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: kbuley+github
+          password: ${{ secrets.QUAY_PASSWORD }}
+
       - name: Set variables
         id: vars
         env:
@@ -75,4 +81,5 @@ jobs:
             VERSION=${{ steps.vars.outputs.version }}
           tags: |
             kbuley/basedevcontainer:${{ steps.vars.outputs.ubuntu_version }}
+            quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.ubuntu_version }}
           push: true
