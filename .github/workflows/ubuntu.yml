@@ -55,20 +55,20 @@ jobs:
         run: |
           BRANCH=${GITHUB_REF#refs/heads/}
           TAG=${GITHUB_REF#refs/tags/}
-          echo ::set-output name=commit::$(git rev-parse --short HEAD)
-          echo ::set-output name=created::$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "create=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
           if [ "$TAG" != "$GITHUB_REF" ]; then
-            echo ::set-output name=version::$TAG
-            echo ::set-output name=ubuntu_version::$TAG-ubuntu
-            echo ::set-output name=platforms::linux/amd64,linux/arm64
+            echo "version=$TAG" >> $GITHUB_OUTPUT
+            echo "ubuntu_version=$TAG-ubuntu" >> $GITHUB_OUTPUT
+            echo "platforms=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
           elif [ "$BRANCH" = "main" ]; then
-            echo ::set-output name=version::latest
-            echo ::set-output name=ubuntu_version::ubuntu
-            echo ::set-output name=platforms::linux/amd64,linux/arm64
+            echo "version=latest" >> $GITHUB_OUTPUT
+            echo "ubuntu_version=ubuntu" >> $GITHUB_OUTPUT
+            echo "platforms=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=version::$BRANCH
-            echo ::set-output name=ubuntu_version::$BRANCH-ubuntu
-            echo ::set-output name=platforms::linux/amd64,linux/arm64
+            echo "version=$BRANCH" >> $GITHUB_OUTPUT
+            echo "ubuntu_version=$BRANCH-ubuntu" >> $GITHUB_OUTPUT
+            echo "platforms=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push final image
