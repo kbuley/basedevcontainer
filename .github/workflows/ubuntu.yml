@@ -1,4 +1,5 @@
 name: Ubuntu
+
 on:
   push:
     paths:
@@ -81,6 +82,8 @@ jobs:
             COMMIT=${{ steps.vars.outputs.commit }}
             VERSION=${{ steps.vars.outputs.version }}
           tags: |
+            kbuley/basedevcontainer:${{ steps.vars.outputs.version }}
             kbuley/basedevcontainer:${{ steps.vars.outputs.ubuntu_version }}
+            quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.version }}
             quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.ubuntu_version }}
           push: true
