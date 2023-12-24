@@ -19,3 +19,17 @@ jobs:
           repository: kbuley/basedevcontainer
           short-description: Base development container for Visual Studio Code, used as base image by other images
           readme-filepath: README.md
+  quayIODescription:
+    name: Push README to Quay.io
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Quay.io Description
+        uses: christian-korneck/update-container-description-action@v1
+        env:
+          DOCKER_APIKEY: ${{ secrets.QUAY_API_KEY }}
+        with:
+          destination_container_repo: quay.io/kbuley/basedevcontainer
+          provider: quay
+          readme_file: "README.md"
