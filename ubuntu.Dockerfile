@@ -11,7 +11,7 @@ FROM kbuley/binpot:gh-${GH_VERSION} AS gh
 FROM kbuley/binpot:lazygit-${LAZYGIT_VERSION} as lazygit
 
 FROM ubuntu:${UBUNTU_VERSION} as neovim
-ARG NEOVIM_VERSION=v0.9.4
+ARG NEOVIM_VERSION=v0.9.5
 WORKDIR /builder
 # hadolint ignore=DL3008
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
