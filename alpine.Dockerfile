@@ -11,7 +11,7 @@ FROM kbuley/binpot:gh-${GH_VERSION} AS gh
 FROM kbuley/binpot:lazygit-${LAZYGIT_VERSION} as lazygit
 
 FROM alpine:${ALPINE_VERSION} as neovim
-ARG NEOVIM_VERSION=v0.9.4
+ARG NEOVIM_VERSION=v0.9.5
 WORKDIR /builder
 
 #hadolint ignore=DL3018
