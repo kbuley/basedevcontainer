@@ -48,7 +48,7 @@ ENV BASE_VERSION="${VERSION}-${CREATED}-${COMMIT}"
 COPY --from=neovim /package/nvim-linux64.sh /tmp
 
 #hadolint ignore=DL3018
-RUN apk add -q --update --progress --no-cache shadow sudo icu bash tmux python3 neovim clang lazygit fzf fd \
+RUN apk add -q --update --progress --no-cache shadow sudo icu bash tmux python3 clang lazygit fzf fd \
   ca-certificates tzdata git mandoc git-doc openssh-client make ncurses zsh nano zsh-vcs less libstdc++ curl wget clang zsh-theme-powerlevel10k gitstatus\
   && addgroup -g ${USER_GID} ${USERNAME} \
   && adduser -D -G ${USERNAME} -u ${USER_UID} ${USERNAME} \
