@@ -86,9 +86,9 @@ jobs:
             COMMIT=${{ steps.vars.outputs.commit }}
             VERSION=${{ steps.gitVersion.outputs.semVer }}
           tags: |
-            kbuley/basedevcontainer:${{ steps.gitVersion.outputs.semVer }}
+            kbuley/basedevcontainer:"alpine-${{ steps.gitVersion.outputs.semVer }}"
             kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
-            quay.io/kbuley/basedevcontainer:${{ steps.gitVersion.outputs.semVer }}
+            quay.io/kbuley/basedevcontainer:"alpine-${{ steps.gitVersion.outputs.semVer }}"
             quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
           push: true
 
