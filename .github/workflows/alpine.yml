@@ -46,7 +46,7 @@ jobs:
         uses: gittools/actions/gitversion/execute@v1.1.1
         with:
           overrideConfig: |
-            mode=mainline
+            mode=Mainline
 
       - uses: docker/setup-qemu-action@v3
 
