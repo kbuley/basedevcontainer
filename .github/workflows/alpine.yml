@@ -93,7 +93,7 @@ jobs:
           push: true
 
       - name: Tag release
-        if: success() && (github.ref == 'refs/heads/main'
+        if: success() && (github.ref == 'refs/heads/main')
         run: |
           git tag "v${{ steps.gitVersion.outputs.semVer }}"
           git push --tags
