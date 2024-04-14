@@ -81,7 +81,7 @@ jobs:
             COMMIT=${{ steps.vars.outputs.commit }}
             VERSION=v${{ steps.gitVersion.outputs.semVer }}
           tags: |
-            kbuley/basedevcontaine:v${{ steps.gitVersion.outputs.semVer }}-${{ steps.vars.outputs.os_version }}
+            kbuley/basedevcontainer:v${{ steps.gitVersion.outputs.semVer }}-${{ steps.vars.outputs.os_version }}
             quay.io/kbuley/basedevcontainer:v${{ steps.gitVersion.outputs.semVer }}-${{ steps.vars.outputs.os_version }}
           push: true
 
