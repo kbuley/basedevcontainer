@@ -1,4 +1,4 @@
-name: Debian
+name: debian
 
 on:
   push:
@@ -18,7 +18,8 @@ on:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: debian-latest
+    if: success() && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop'
     env:
       DOCKER_BUILDKIT: "1"
     steps:
@@ -28,11 +29,24 @@ jobs:
         run: docker build -f debian.Dockerfile -t kbuley/basedevcontainer .
 
   publish:
-    needs: [verify]
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    runs-on: debian-latest
     steps:
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1.1.1
+        with:
+          versionSpec: "5.x"
+
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Version
+        id: gitVersion
+        uses: gittools/actions/gitversion/execute@v1.1.1
+        with:
+          overrideConfig: |
+            mode=Mainline
 
       - uses: docker/setup-qemu-action@v3
 
@@ -51,25 +65,15 @@ jobs:
 
       - name: Set variables
         id: vars
-        env:
-          EVENT_NAME: ${{ github.event_name }}
         run: |
           BRANCH=${GITHUB_REF#refs/heads/}
-          TAG=${GITHUB_REF#refs/tags/}
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "create=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
-          if [ "$TAG" != "$GITHUB_REF" ]; then
-            echo "version=$TAG" >> $GITHUB_OUTPUT
-            echo "debian_version=$TAG-debian" >> $GITHUB_OUTPUT
-            echo "platforms=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
-          elif [ "$BRANCH" = "main" ]; then
-            echo "version=latest" >> $GITHUB_OUTPUT
-            echo "debian_version=debian" >> $GITHUB_OUTPUT
-            echo "platforms=linux/amd64,linux/arm64,linux/arm64/v8" >> $GITHUB_OUTPUT
+          echo "platforms=linux/amd64,linux/arm64,linux/arm64/v8" >> $GITHUB_OUTPUT
+          if [ "$BRANCH" = "main" ]; then
+            echo "os_version=debian" >> $GITHUB_OUTPUT
           else
-            echo "version=$BRANCH" >> $GITHUB_OUTPUT
-            echo "debian_version=$BRANCH-debian" >> $GITHUB_OUTPUT
-            echo "platforms=linux/amd64,linux/arm64,linux/arm64/v8" >> $GITHUB_OUTPUT
+            echo "os_version=$BRANCH-debian" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push final image
@@ -80,10 +84,15 @@ jobs:
           build-args: |
             CREATED=${{ steps.vars.outputs.created }}
             COMMIT=${{ steps.vars.outputs.commit }}
-            VERSION=${{ steps.vars.outputs.version }}
+            VERSION=${{ steps.gitVersion.outputs.semVer }}
           tags: |
-            kbuley/basedevcontainer:${{ steps.vars.outputs.version }}
-            kbuley/basedevcontainer:${{ steps.vars.outputs.debian_version}}
-            quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.version }}
-            quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.debian_version }}
+            kbuley/basedevcontaine:debian-${{ steps.gitVersion.outputs.semVer }}
+            kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
+            quay.io/kbuley/basedevcontainer:debian-${{ steps.gitVersion.outputs.semVer }}
+            quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
           push: true
+
+      - name: Tag release
+        if: success() && (github.ref == 'refs/heads/main')
+        run: |
+          git tag "v${{ steps.gitVersion.outputs.semVer }}"
