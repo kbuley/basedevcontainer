@@ -66,15 +66,10 @@ jobs:
       - name: Set variables
         id: vars
         run: |
-          BRANCH=${GITHUB_REF#refs/heads/}
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "created=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
           echo "platforms=linux/amd64,linux/arm64,linux/arm64/v8" >> $GITHUB_OUTPUT
-          if [ "$BRANCH" = "main" ]; then
-            echo "os_version=alpine" >> $GITHUB_OUTPUT
-          else
-            echo "os_version=$BRANCH-alpine" >> $GITHUB_OUTPUT
-          fi
+          echo "os_version=alpine" >> $GITHUB_OUTPUT
 
       - name: Build and push final image
         uses: docker/build-push-action@v5
@@ -84,12 +79,10 @@ jobs:
           build-args: |
             CREATED=${{ steps.vars.outputs.created }}
             COMMIT=${{ steps.vars.outputs.commit }}
-            VERSION=${{ steps.gitVersion.outputs.semVer }}
+            VERSION=v${{ steps.gitVersion.outputs.semVer }}
           tags: |
-            kbuley/basedevcontainer:alpine-${{ steps.gitVersion.outputs.semVer }}
-            kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
-            quay.io/kbuley/basedevcontainer:alpine-${{ steps.gitVersion.outputs.semVer }}
-            quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
+            kbuley/basedevcontaine:v${{ steps.gitVersion.outputs.semVer }}-${{ steps.vars.outputs.os_version }}
+            quay.io/kbuley/basedevcontainer:v${{ steps.gitVersion.outputs.semVer }}-${{ steps.vars.outputs.os_version }}
           push: true
 
       - name: Tag release

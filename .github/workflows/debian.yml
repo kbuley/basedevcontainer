@@ -1,4 +1,4 @@
-name: debian
+name: Debian
 
 on:
   push:
@@ -18,7 +18,7 @@ on:
 
 jobs:
   verify:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
     if: success() && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop'
     env:
       DOCKER_BUILDKIT: "1"
@@ -30,7 +30,7 @@ jobs:
 
   publish:
     if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v1.1.1
@@ -66,15 +66,10 @@ jobs:
       - name: Set variables
         id: vars
         run: |
-          BRANCH=${GITHUB_REF#refs/heads/}
           echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "create=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+          echo "created=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
           echo "platforms=linux/amd64,linux/arm64,linux/arm64/v8" >> $GITHUB_OUTPUT
-          if [ "$BRANCH" = "main" ]; then
-            echo "os_version=debian" >> $GITHUB_OUTPUT
-          else
-            echo "os_version=$BRANCH-debian" >> $GITHUB_OUTPUT
-          fi
+          echo "os_version=debian" >> $GITHUB_OUTPUT
 
       - name: Build and push final image
         uses: docker/build-push-action@v5
@@ -84,15 +79,14 @@ jobs:
           build-args: |
             CREATED=${{ steps.vars.outputs.created }}
             COMMIT=${{ steps.vars.outputs.commit }}
-            VERSION=${{ steps.gitVersion.outputs.semVer }}
+            VERSION=v${{ steps.gitVersion.outputs.semVer }}
           tags: |
-            kbuley/basedevcontaine:debian-${{ steps.gitVersion.outputs.semVer }}
-            kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
-            quay.io/kbuley/basedevcontainer:debian-${{ steps.gitVersion.outputs.semVer }}
-            quay.io/kbuley/basedevcontainer:${{ steps.vars.outputs.os_version }}
+            kbuley/basedevcontaine:v${{ steps.gitVersion.outputs.semVer }}-${{ steps.vars.outputs.os_version }}
+            quay.io/kbuley/basedevcontainer:v${{ steps.gitVersion.outputs.semVer }}-${{ steps.vars.outputs.os_version }}
           push: true
 
       - name: Tag release
         if: success() && (github.ref == 'refs/heads/main')
         run: |
           git tag "v${{ steps.gitVersion.outputs.semVer }}"
+          git push --tags
